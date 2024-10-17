@@ -11,9 +11,10 @@
 }
 
 .quiz-container {
+    display: block;
     max-width: 600px;
-    margin: 100px auto; 
-    padding: 25px 50px 25px; 
+    margin: 75px auto; 
+    padding: 20px 20px 20px; 
     border: 2px solid #ccc;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -23,27 +24,49 @@
     font-size: 1.2em;
     /* Removed margin-left and used text alignment for centering */
     margin: 0 0 10px 0; /* Removed left margin */
+    max-width: 400px;
+}
+
+#quiz{
+    max-width: 400px;
+    margin: 25px;
+}
+.button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
 }
 
 .answer {
+    display: block;
     margin: 5px 0; /* Added vertical spacing between answer options */
 }
 
-#Next, #Previous {
-    padding: 10px 30px;
-    
+input[type="radio"] {
+    margin-right: 10px;
 }
 
-#Next:hover {
-    background-color: #bcbaba; /* Added hover effect directly to the button */
+#previous {
+    margin-left: 20px;
+}
+
+#Next {
+    float: right;
+    margin-right: 20px;
+}
+
+
+
+Button:hover {
+    background-color: #c2bdbd; /* Added hover effect directly to the button */
 }
 button{
-    color: #131313;
+    color: #080808;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    padding: 10px 30px;
+    padding: 5px 5px;
 }
 
     </style>
@@ -51,8 +74,8 @@ button{
 <body>
     <div class="quiz-container">
         <div id="quiz"></div>
-        <button id="Next">Next Question</button>
         <button id="previous">previous</button>
+        <button id="Next">Next Question</button>
     </div>
 
     <script>
@@ -86,25 +109,37 @@ button{
         // Get quiz elements from HTML
         const quiz = document.getElementById('quiz');
         const nextButton = document.getElementById('Next'); // Corrected ID here
+        const previousButton = document.getElementById('previous');
 
         let currentquiz = 0;
-
+        let answersSelected = Array(questions.length).fill(null);
         function loadQuiz() {
             const currentquizData = questions[currentquiz];
             quiz.innerHTML = 
-            `<div class="question">${currentquizData.question}</div>
-            <label class="answer"><input type="radio" name="answer" value="a"> ${currentquizData.a}</label>
-            <label class="answer"><input type="radio" name="answer" value="b"> ${currentquizData.b}</label>
-            <label class="answer"><input type="radio" name="answer" value="c"> ${currentquizData.c}</label>
-            <label class="answer"><input type="radio" name="answer" value="d"> ${currentquizData.d}</label>`;
+            `
+        <div class="question">${currentquizData.question}</div>
+        <label class="answer">
+            <input type="radio" name="answer" value="a" ${answersSelected[currentquiz] === 'a' ? 'checked' : ''}> 
+            ${currentquizData.a}
+        </label>
+        <label class="answer">
+            <input type="radio" name="answer" value="b" ${answersSelected[currentquiz] === 'b' ? 'checked' : ''}> 
+            ${currentquizData.b}
+        </label>
+        <label class="answer">
+            <input type="radio" name="answer" value="c" ${answersSelected[currentquiz] === 'c' ? 'checked' : ''}> 
+            ${currentquizData.c}
+        </label>
+        <label class="answer">
+            <input type="radio" name="answer" value="d" ${answersSelected[currentquiz] === 'd' ? 'checked' : ''}> 
+            ${currentquizData.d}
+        </label>`;
 
-            // Show the Next button when an answer is selected
-            const answerOptions = document.querySelectorAll('.answer');
-            answerOptions.forEach(option => {
-                option.addEventListener('click', () => {
-                    nextButton.style.display = 'block'; // Show next button when an answer is selected
-                });
-            });
+        previousButton.style.display = currentquiz === 0 ? 'none' : '';
+        if (currentquiz===questions.length-1) {
+            nextButton.innerHTML = 'Finish';
+        } else nextButton.innerHTML = 'Next question';
+        
         }
 
         function getSelectedAns() {
@@ -122,20 +157,41 @@ button{
             const selectedAnswer = getSelectedAns();
 
             if (selectedAnswer != null) {
-                currentquiz++;
+                answersSelected[currentquiz] = selectedAnswer;
 
-                if (currentquiz < questions.length) { // Corrected check here
+                if (currentquiz < questions.length - 1) { // Corrected check here
+                    currentquiz++;
                     loadQuiz();
                 } else {
-                    quiz.innerHTML = `<h2>Quiz finished!</h2>`;
+                    let score = 0;
+                    answersSelected.forEach((answer, index) => {
+                        if (answer === questions[index].correct){
+                            score++;
+                        }
+                    });
+                    quiz.innerHTML = `
+                    <h2> Quiz finished!</h2>
+                    <p>You scored ${score} out of ${questions.length}</p>
+                    `;
+                    
                 }
             } else {
                 alert("Please select an answer");
             }
         });
 
-        // Initialize the quiz
+        previousButton.addEventListener('click', () => {
+            
+            if (currentquiz >= 0) {
+                answersSelected[currentquiz] = getSelectedAns();                
+                currentquiz--;
+                loadQuiz();
+            }
+        })
+
         loadQuiz();
+    
+        
     </script>
 </body>
 </html>
