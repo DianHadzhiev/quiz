@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-color: #fff;
+}
+
+.quiz-container {
+    max-width: 600px;
+    margin: 100px auto; 
+    padding: 25px 50px 25px; 
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.question {
+    font-size: 1.2em;
+    /* Removed margin-left and used text alignment for centering */
+    margin: 0 0 10px 0; /* Removed left margin */
+}
+
+.answer {
+    margin: 5px 0; /* Added vertical spacing between answer options */
+}
+
+#Next, #Previous {
+    padding: 10px 30px;
+    
+}
+
+#Next:hover {
+    background-color: #bcbaba; /* Added hover effect directly to the button */
+}
+button{
+    color: #131313;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 10px 30px;
+}
+
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div id="quiz"></div>
+        <button id="Next">Next Question</button>
+        <button id="previous">previous</button>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "What is the capital of France?",
+                a: "New York",
+                b: "London",
+                c: "Paris",
+                d: "Berlin",
+                correct: "c"
+            },
+            {
+                question: "Who is the author of 'Harry Potter'?",
+                a: "J.R.R. Tolkien",
+                b: "J.K. Rowling",
+                c: "George R.R. Martin",
+                d: "Stephen King",
+                correct: "b"
+            },
+            {
+                question: "What is the largest planet in our solar system?",
+                a: "Earth",
+                b: "Mars",
+                c: "Jupiter",
+                d: "Saturn",
+                correct: "c"
+            }
+        ];
+
+        // Get quiz elements from HTML
+        const quiz = document.getElementById('quiz');
+        const nextButton = document.getElementById('Next'); // Corrected ID here
+
+        let currentquiz = 0;
+
+        function loadQuiz() {
+            const currentquizData = questions[currentquiz];
+            quiz.innerHTML = 
+            `<div class="question">${currentquizData.question}</div>
+            <label class="answer"><input type="radio" name="answer" value="a"> ${currentquizData.a}</label>
+            <label class="answer"><input type="radio" name="answer" value="b"> ${currentquizData.b}</label>
+            <label class="answer"><input type="radio" name="answer" value="c"> ${currentquizData.c}</label>
+            <label class="answer"><input type="radio" name="answer" value="d"> ${currentquizData.d}</label>`;
+
+            // Show the Next button when an answer is selected
+            const answerOptions = document.querySelectorAll('.answer');
+            answerOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    nextButton.style.display = 'block'; // Show next button when an answer is selected
+                });
+            });
+        }
+
+        function getSelectedAns() {
+            const answers = document.querySelectorAll('input[name="answer"]');
+            let answer;
+            answers.forEach((ans) => {
+                if (ans.checked) {
+                    answer = ans.value;
+                }
+            });
+            return answer;
+        }
+
+        nextButton.addEventListener('click', () => {
+            const selectedAnswer = getSelectedAns();
+
+            if (selectedAnswer != null) {
+                currentquiz++;
+
+                if (currentquiz < questions.length) { // Corrected check here
+                    loadQuiz();
+                } else {
+                    quiz.innerHTML = `<h2>Quiz finished!</h2>`;
+                }
+            } else {
+                alert("Please select an answer");
+            }
+        });
+
+        // Initialize the quiz
+        loadQuiz();
+    </script>
+</body>
+</html>
